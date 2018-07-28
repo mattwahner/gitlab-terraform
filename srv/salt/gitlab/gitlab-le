@@ -1,0 +1,3 @@
+#!/bin/bash
+set -e
+/usr/bin/gitlab-ctl renew-le-certs > /dev/null

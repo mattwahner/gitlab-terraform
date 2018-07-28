@@ -1,0 +1,4 @@
+digital_ocean_token = "<digital ocean api token / key>"
+public_key = "<path to public key>"
+private_key = "<path to private key>"
+ssh_fingerprint = "<ssh key fingerprint>"
