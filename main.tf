@@ -23,6 +23,8 @@ resource "digitalocean_droplet" "master" {
 
     provisioner "remote-exec" {
         inline = [
+            "sudo apt-get -y update",
+            "sudo apt-get -y upgrade",
             "cd /tmp",
             "curl -o bootstrap-salt.sh -L https://bootstrap.saltstack.com",
             "sudo sh ./bootstrap-salt.sh -M -A localhost"
@@ -143,8 +145,9 @@ resource "null_resource" "salt-highstate" {
 
     provisioner "remote-exec" {
         inline = [
-            "sudo salt 'master' state.apply",
-            "sudo salt 'kubernetes*' state.apply"
+            "sudo salt -G 'roles:master' state.apply",
+            "sudo salt -G 'roles:kubernetes-worker' state.apply",
+            "sudo salt -G 'roles:firewall' state.apply"
         ]
     }
     

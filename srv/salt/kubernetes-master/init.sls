@@ -7,6 +7,15 @@ kubectl:
     - require:
       - sls: kubernetes-all
 
+/home/sandman/cluster-output.sh:
+  file.managed:
+    - source: salt://kubernetes-master/cluster-output.sh
+    - user: sandman
+    - group: sandman
+    - mode: 777
+    - require:
+      - pkg: kubectl
+
 {% if salt['grains.get']('kubesetup') != 'complete' %}
 
 init-cluster:
@@ -27,13 +36,20 @@ init-cluster:
     - user: sandman
     - require:
       - file: /home/sandman/.kube
-
+    
 install-pod-network:
   cmd.run:
     - name: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
     - runas: sandman
     - require:
       - file: /home/sandman/.kube/config
+
+disable-rbac:
+  cmd.run:
+    - name: kubectl create clusterrolebinding permissive-binding --clusterrole=cluster-admin --user=admin --user=kubelet --group=system:serviceaccounts
+    - runas: sandman
+    - require:
+      - cmd: install-pod-network
 
 refresh-pillar:
   salt.function:
@@ -55,5 +71,6 @@ finish-cluster:
     - value: complete
     - require:
       - salt: update-mine
+      - cmd: disable-rbac
 
 {% endif %}

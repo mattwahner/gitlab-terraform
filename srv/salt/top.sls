@@ -1,7 +1,6 @@
 base:
   'roles:master':
     - match: grain
-    - master
     - gitlab
     - sandman-user
     - kubernetes-master
@@ -9,3 +8,6 @@ base:
     - match: grain
     - sandman-user
     - kubernetes-worker
+  'roles:firewall':
+    - match: grain
+    - firewall
