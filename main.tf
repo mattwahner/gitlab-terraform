@@ -4,7 +4,7 @@ resource "digitalocean_droplet" "master" {
     image = "ubuntu-16-04-x64"
     name = "master"
     region = "nyc3"
-    size = "4gb"
+    size = "s-2vcpu-4gb"
     ssh_keys = [
         "${var.ssh_fingerprint}"
     ]
@@ -44,7 +44,7 @@ resource "digitalocean_droplet" "kubernetes-cluster" {
     image = "ubuntu-16-04-x64"
     name = "kubernetes-worker-${count.index}"
     region = "nyc3"
-    size = "1gb"
+    size = "s-1vcpu-1gb"
     depends_on = ["digitalocean_droplet.master"]
     ssh_keys = [
         "${var.ssh_fingerprint}"
@@ -145,9 +145,8 @@ resource "null_resource" "salt-highstate" {
 
     provisioner "remote-exec" {
         inline = [
-            "sudo salt -G 'roles:master' state.apply",
-            "sudo salt -G 'roles:kubernetes-worker' state.apply",
-            "sudo salt -G 'roles:firewall' state.apply"
+            "sudo salt -G 'roles:master' state.apply --state-output=terse",
+            "sudo salt -G 'roles:kubernetes-worker' state.apply --state-output=terse"
         ]
     }
     

@@ -8,6 +8,3 @@ base:
     - match: grain
     - sandman-user
     - kubernetes-worker
-  'roles:firewall':
-    - match: grain
-    - firewall
